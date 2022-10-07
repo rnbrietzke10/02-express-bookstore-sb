@@ -50,6 +50,51 @@ describe('POST /books', () => {
     expect(res.body.book).toHaveProperty('isbn');
     expect(res.body.book).toHaveProperty('title');
   });
+
+  test('Unable to create book without title', async () => {
+    const res = await request(app).post('/books').send({
+      isbn: '789123',
+      amazon_url: 'https://www.amazon.com/book',
+      author: 'tester',
+      language: 'English',
+      pages: 1000,
+      publisher: 'Best Publisher',
+      year: 2020,
+    });
+    expect(res.statusCode).toBe(400);
+  });
+});
+
+//'123456', 'www.amazon.com/mybook', 'John', 'English', '1000', 'The Publisher', 'my book', 2021
+describe('PUT /:isbn', () => {
+  test('Update a book', async () => {
+    const res = await request(app).put(`/books/${bookIsbn}`).send({
+      isbn: '123456',
+      amazon_url: 'https://www.amazon.com/mybook',
+      author: 'John',
+      language: 'English',
+      pages: 1000,
+      publisher: 'The Publisher',
+      title: 'My Updated Version',
+      year: 2020,
+    });
+    expect(res.statusCode).toBe(200);
+    expect(res.body.book).toHaveProperty('isbn');
+    expect(res.body.book.title).toBe('My Updated Version');
+  });
+
+  test('Unable to update book witt invalid year', async () => {
+    const res = await request(app).put(`/books/${bookIsbn}`).send({
+      isbn: '789123',
+      amazon_url: 'https://www.amazon.com/book',
+      author: 'tester',
+      language: 'English',
+      pages: 1000,
+      publisher: 'Best Publisher',
+      year: 'dfjasdhl',
+    });
+    expect(res.statusCode).toBe(400);
+  });
 });
 
 afterEach(async () => await db.query('DELETE FROM books'));
