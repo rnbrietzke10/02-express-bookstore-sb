@@ -97,6 +97,13 @@ describe('PUT /:isbn', () => {
   });
 });
 
+describe('DELETE /books/:isbn', () => {
+  test('Deletes a book', async () => {
+    const res = await request(app).delete(`/books/${bookIsbn}`);
+    expect(res.body).toEqual({ message: 'Book deleted' });
+  });
+});
+
 afterEach(async () => await db.query('DELETE FROM books'));
 
 afterAll(async () => await db.end());
